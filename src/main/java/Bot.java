@@ -47,20 +47,25 @@ public class Bot extends TelegramLongPollingBot {
                 case "/start":
                     sendMsg(message, "Привет!");
                     break;
-                case "/City":
+                case "/Weather":
                     sendMsg(message, "Напишите город:");
-                    break;
-                case "/Settings":
-                    sendMsg(message, "Давайте настроим меня:");
-                    break;
-                default:
                     try {
                         sendMsg(message, Weather.getWeather(message.getText(), model));
                     } catch (IOException e) {
                         sendMsg(message, "Не найдено");
                     }
+                    break;
+                case "/News":
+                    sendMsg(message, "Топ 7 новостей:");
+                    sendMsg(message, News.readRSSFeed("https://lenta.ru/rss/top7"));
+                    break;
+                /*default:
+                    try {
+                        sendMsg(message, Weather.getWeather(message.getText(), model));
+                    } catch (IOException e) {
+                        sendMsg(message, "Не найдено");
+                    }*/
             }
-
         }
     }
     public void setButton(SendMessage sendMessage) { //установка клавиш
@@ -73,8 +78,8 @@ public class Bot extends TelegramLongPollingBot {
         List<KeyboardRow> keyboardRowList = new ArrayList<>();
         KeyboardRow keyboardFirstRow = new KeyboardRow();
 
-        keyboardFirstRow.add(new KeyboardButton("/City"));
-        keyboardFirstRow.add(new KeyboardButton("/Settings"));
+        keyboardFirstRow.add(new KeyboardButton("/Weather"));
+        keyboardFirstRow.add(new KeyboardButton("/News"));
 
         keyboardRowList.add(keyboardFirstRow);
         replyKeyboardMarkup.setKeyboard(keyboardRowList);

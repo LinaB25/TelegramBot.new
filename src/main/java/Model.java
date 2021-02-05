@@ -1,5 +1,5 @@
 public class Model {
-    private String  name;
+    private String name;
     private Double temp;
     private Double wind;
 
