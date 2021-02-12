@@ -1,3 +1,4 @@
+import entities.WeatherEntity;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
@@ -6,7 +7,10 @@ import org.telegram.telegrambots.api.objects.replykeyboard.buttons.KeyboardButto
 import org.telegram.telegrambots.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +44,7 @@ public class Bot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) { //метод для приема сообщений
-        Model model = new Model();
+        WeatherEntity weatherEntity = new WeatherEntity();
         Message message = update.getMessage();
         if (message != null && message.hasText()) {
             switch (message.getText()) {
@@ -49,22 +53,25 @@ public class Bot extends TelegramLongPollingBot {
                     break;
                 case "/Weather":
                     sendMsg(message, "Напишите город:");
+                    break;
+                 case "/News":
+                    sendMsg(message, "Топ 7 новостей:");
+                     try {
+                         sendMsg(message, News.readRSSFeed());
+                     } catch (Exception e) {
+                         e.printStackTrace();
+                     }
+                     break;
+                /*case "/News":
+                    sendMsg(message, "Топ 7 новостей:");
+                    sendMsg(message, News.readRSSFeed("https://lenta.ru/rss/top7"));
+                    break;*/
+                default:
                     try {
-                        sendMsg(message, Weather.getWeather(message.getText(), model));
+                        sendMsg(message, Weather.getWeather(message.getText(), weatherEntity));
                     } catch (IOException e) {
                         sendMsg(message, "Не найдено");
                     }
-                    break;
-                case "/News":
-                    sendMsg(message, "Топ 7 новостей:");
-                    sendMsg(message, News.readRSSFeed("https://lenta.ru/rss/top7"));
-                    break;
-                /*default:
-                    try {
-                        sendMsg(message, Weather.getWeather(message.getText(), model));
-                    } catch (IOException e) {
-                        sendMsg(message, "Не найдено");
-                    }*/
             }
         }
     }

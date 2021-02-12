@@ -1,4 +1,6 @@
-public class Model {
+package entities;
+
+public class WeatherEntity {
     private String name;
     private Double temp;
     private Double wind;
