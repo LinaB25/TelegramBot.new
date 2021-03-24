@@ -40,6 +40,25 @@
             <version>${org.projectlombok.version}</version>
             <scope>compile</scope>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.camel/camel-rss -->
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-rss</artifactId>
+            <version>3.8.0</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/commons-digester/commons-digester -->
+        <dependency>
+            <groupId>commons-digester</groupId>
+            <artifactId>commons-digester</artifactId>
+            <version>1.8</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.rometools/rome -->
+        <dependency>
+            <groupId>com.rometools</groupId>
+            <artifactId>rome</artifactId>
+            <version>1.15.0</version>
+        </dependency>
+
     </dependencies>
     <build>
         <finalName>${project.artifactId}</finalName>

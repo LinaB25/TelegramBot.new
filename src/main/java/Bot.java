@@ -1,3 +1,4 @@
+import entities.CurrencyEntity;
 import entities.WeatherEntity;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Message;
@@ -12,22 +13,21 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Bot extends TelegramLongPollingBot {
 
     @Override
     public String getBotToken() {
-        return "1335459303:AAEG1UJn6L8W8UKMB6s6qRYCDw2ZBv6rU1c";
+        return "1669989937:AAFr38rHUAsmhHWCbe4y8pB04448fqtX86w";
     }
 
     @Override
     public String getBotUsername() {
-        return "TutBot";
+        return "TutBotBot";
     }
 
-    public void  sendMsg(Message message, String text){ //метод получения id чата и id сообщения и отправки сообщения
+    public void sendMsg(Message message, String text) { //метод получения id чата и id сообщения и отправки сообщения
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(message.getChatId().toString());
         sendMessage.setReplyToMessageId(message.getMessageId());
@@ -45,36 +45,46 @@ public class Bot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) { //метод для приема сообщений
         WeatherEntity weatherEntity = new WeatherEntity();
+        CurrencyEntity currencyEntity = new CurrencyEntity();
         Message message = update.getMessage();
         if (message != null && message.hasText()) {
-            switch (message.getText()) {
+        switch (message.getText()) {
                 case "/start":
-                    sendMsg(message, "Привет!");
+                    sendMsg(message, "Привет, дай следующую команду!");
+                    break;
+                case "/Currency":
+                    sendMsg(message, "USD или EUR");
                     break;
                 case "/Weather":
                     sendMsg(message, "Напишите город:");
                     break;
-                 case "/News":
-                    sendMsg(message, "Топ 7 новостей:");
-                     try {
-                         sendMsg(message, News.readRSSFeed());
-                     } catch (Exception e) {
-                         e.printStackTrace();
-                     }
-                     break;
-                /*case "/News":
-                    sendMsg(message, "Топ 7 новостей:");
-                    sendMsg(message, News.readRSSFeed("https://lenta.ru/rss/top7"));
-                    break;*/
+                case "/News":
+                    sendMsg(message, "Топ 10 новостей:");
+                    try {
+                        Map<String, String> map = News.readRSSFeed();
+                        for (Map.Entry<String, String> entry : map.entrySet()) {
+                            sendMsg(message, String.valueOf(entry.getKey() + " " + entry.getValue()));
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    break;
                 default:
                     try {
                         sendMsg(message, Weather.getWeather(message.getText(), weatherEntity));
                     } catch (IOException e) {
+                        sendMsg(message, "Город не найден");
+                    }
+                    try {
+                        sendMsg(message, Currency.getCurrency(message.getText(), currencyEntity));
+                    } catch (IOException f) {
                         sendMsg(message, "Не найдено");
                     }
+
             }
         }
     }
+
     public void setButton(SendMessage sendMessage) { //установка клавиш
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
         sendMessage.setReplyMarkup(replyKeyboardMarkup);
@@ -87,6 +97,7 @@ public class Bot extends TelegramLongPollingBot {
 
         keyboardFirstRow.add(new KeyboardButton("/Weather"));
         keyboardFirstRow.add(new KeyboardButton("/News"));
+        keyboardFirstRow.add(new KeyboardButton("/Currency"));
 
         keyboardRowList.add(keyboardFirstRow);
         replyKeyboardMarkup.setKeyboard(keyboardRowList);
